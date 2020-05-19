@@ -2,24 +2,52 @@ package com.example.playingaudioapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SeekBar;
 
 public class MainActivity extends AppCompatActivity {
 
     MediaPlayer mediaPlayer;
-    Button bt;
+    Button button;
+    SeekBar volumeSeekBar;
+    AudioManager audioManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        bt = findViewById(R.id.button);
+        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 
-        bt.setOnClickListener(new View.OnClickListener() {
+
+        button = findViewById(R.id.button);
+        volumeSeekBar = findViewById(R.id.volumeSeekBar);
+        volumeSeekBar.setMax(maxVolume);
+        volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // Log.d("Progress changed: ", String.valueOf(progress));
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mediaPlayer.isPlaying()){
@@ -36,11 +64,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void play(){
         mediaPlayer.start();
-        bt.setText("Pause");
+        button.setText("Pause");
     }
     public void pause(){
         mediaPlayer.pause();
-        bt.setText("Play");
+        button.setText("Play");
     }
 
 }
